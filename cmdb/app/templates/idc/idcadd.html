@@ -1,0 +1,118 @@
+{% extends "/base/base.html" %}
+
+{% block breadcrumb %} 
+添加机房
+{% endblock %}
+{% block main %}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+	<div class="col-sm-10">
+	     <div class="ibox float-e-margins">
+		<div class="ibox-title">
+		    <h5>填写基本信息</h5>
+		    <div class="ibox-tools">
+			<a class="collapse-link">
+			    <i class="fa fa-chevron-up"></i>
+			</a>
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+			    <i class="fa fa-wrench"></i>
+			</a>
+			<a class="close-link">
+			    <i class="fa fa-times"></i>
+			</a>
+		    </div>
+		</div>
+		<div class="ibox-content">
+		    <form id="idcForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+			<div class="form-group">
+			    <label for="name" class="col-sm-3 control-label  ">机房英文简写</label>
+			    <div class="col-sm-8">
+				<input id="name" name="name" placeholder="Name" type="text" class="form-control" aria-required="true">
+			     </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="name_cn" class="col-sm-3 control-label">机房中文名</label>
+			    <div class="col-sm-8">
+				<input id="name_cn" name="name_cn" placeholder="Chinese name" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="address" class="col-sm-3 control-label">地址</label>
+			    <div class="col-sm-8">
+				<input id="address" name="address" placeholder="Address" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="adminer" class="col-sm-3 control-label">联系人</label>
+			    <div class="col-sm-8">
+				<input id="adminer" name="adminer" placeholder="Adminer" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="phone" class="col-sm-3 control-label">联系人电话</label>
+			    <div class="col-sm-8">
+				<input id="phone" name="phone" placeholder="Phone" type="text" class="form-control" aria-required="true" datatype='m' errormsg='请输入11位手机号码'>
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="num" class="col-sm-3 control-label">机柜数量</label>
+			    <div class="col-sm-8">
+				<input id="num" name="num" placeholder="Number" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <div class="col-sm-6 col-sm-offset-2">
+				<button id="submit_button" class="btn btn-primary">确认保存</button>
+				<button id='cancel_button' class="btn btn-white" type="reset">取消</button>
+				<button class="btn btn-white" type="reset">重置</button>
+			    </div>
+			</div>
+			<div style="color:red" class="text-center" id="errmsg"></div>
+		    </form>
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+<script>
+$('#idcForm').Validform({tiptype:3})
+
+$("#submit_button").click(function(){
+    var msg=$('.Validform_wrong').text()
+    if (!msg){
+	$.post("/idcadd/",$("#idcForm").serialize(),function(data){
+	    console.log(data)
+	    data=JSON.parse(data);
+	    if(data["code"] == 0){
+		swal({
+		    title:'Congratulation',
+		    text:data['result'],
+		    type:'success',
+		    confirmButtonText:'确定'
+		    },function(){
+			location.href='/idc/'
+		    })
+	    }else{
+		swal('Error',data['errmsg'],'error')
+	    }
+	})
+	return false
+    }
+})
+
+$('#cancel_button').click(function(){
+    location.href='/idc/'
+})
+
+
+</script>
+{% endblock %}
+

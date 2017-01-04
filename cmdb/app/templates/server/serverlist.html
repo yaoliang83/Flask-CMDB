@@ -1,0 +1,244 @@
+{% extends "/base/base.html" %}
+{% block breadcrumb %} 
+服务器管理
+{% endblock %}
+
+{% block main %} 
+<div class="col-sm-12">
+{% if role == "admin" %}
+<a href="/serveradd" class='btn btn-sm btn-primary'>添加服务器</a>
+{% endif %}
+<table class="table table-striped table-bordered table-hover " id="editable">
+<thead>
+    <tr>
+        <th class="text-center">主机名</th>
+        <th class="text-center">内网IP</th>
+        <th class="text-center">外网IP</th>
+	<!--
+        <th class="text-center">主机名</th>
+        <th class="text-center">操作系统</th>
+        <th class="text-center">CPU型号</th>
+        <th class="text-center">CPU线程数</th>
+        <th class="text-center">内存</th>
+        <th class="text-center">磁盘</th>
+	-->
+        <th class="text-center">机柜ID</th>
+        <th class="text-center">运维负责人</th>
+        <th class="text-center">联系电话</th>
+        <th class="text-center">操作</th>
+    </tr>
+</thead>
+<tbody>
+   {% if servers %}
+   {% for server in servers %}
+        <tr class="gradeX">
+                <td class="text-center">{{server.hostname}}</td>
+                <td class="text-center">{{server.lan_ip}}</td>
+                <td class="text-center">{{server.wan_ip}}</td>
+                <td class="text-center">{{server.cabinet_id}}</td>
+                <td class="text-center">{{server.op}}</td>
+                <td class="text-center">{{server.phone}}</td>
+                <td class="text-center">
+                    <button data-id="{{server.id}}" class="btn btn-xs btn-info update">编辑</button>
+                    <button data-id="{{server.id}}" class="btn btn-xs btn-danger del ">删除</button>
+                </td>
+            </td>
+         </tr>
+    {% endfor %}
+    {% endif %}
+</tbody>
+</table>
+
+</div> <!--col-sm-12-->
+<div class="modal fade" id='updateModel'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">更新</h4>
+      </div>
+      <div class="modal-body">
+	<form method="post" id="updateForm" class="form-horizontal">
+	    <div>
+		<input id='id' type='hidden' name='id' readonly='true' >
+	    </div><!-- id -->
+
+	    <div class='form-group'>
+		<label for="hostname" class="col-sm-3 control-label">主机名<span class="red-fonts">*</span></label>
+		<div class="col-sm-7">
+		    <input id="hostname" name="hostname" placeholder="Hostname" type="text" class="form-control" readonly>
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="lan_ip" class="col-sm-3 control-label">内网IP</label>
+		<div class="col-sm-7">
+		    <input id="lan_ip" name="lan_ip" placeholder="Lan ip" type="text" class="form-control" >
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="wan_ip" class="col-sm-3 control-label">外网IP</label>
+		<div class="col-sm-7">
+		    <input id="wan_ip" name="wan_ip" placeholder="Wan ip" type="text" class="form-control">
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="cabinet_id" class="col-sm-3 control-label">机柜ID</label>
+		<div class="col-sm-7">
+		    <select id='cabinet_id' class='multiselect dropdown-toggle btn btn-default'>
+		    </select>
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="op" class="col-sm-3 control-label">运维负责人</label>
+		<div class="col-sm-7">
+		    <input id="op" name="op" placeholder="Operator" type="text" class="form-control">
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="phone" class="col-sm-3 control-label">联系电话</label>
+		<div class="col-sm-7">
+		    <input id="phone" name="phone" placeholder="Phone" type="text" class="form-control">
+		</div>
+	    </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-default update-cancel" data-dismiss="modal">取消</button>
+	<button type="button" class="btn btn-primary update-sure" data-name=''>确认</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+</div> <!--col-sm-12-->
+<div class="modal fade" id='deleteModel'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">删除</h4>
+      </div>
+      <div class="modal-body">
+	<p>确认删除?</p>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>                                                                         
+	<button type="button" class="btn btn-primary del-sure" data-id=''>确认</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+$('#updateForm').Validform({tiptype:3})
+
+$('.update').click(function(){
+    var id=$(this).attr('data-id')
+    var url = "/server_update_msg?id="+id
+    var str = ''
+
+    $.getJSON('/cabinet_msg',function(data){
+	cabinets = data['result']
+	for(var i=0;i<cabinets.length;i++){
+	    str += '<option value="'+cabinets[i]['id']+'">'+cabinets[i]['name']+'</option>'
+	    }
+	$('#cabinet_id').html(str)
+	
+	$.getJSON(url,function(data){
+	    if (data['code'] == 0){
+		server = data['result']
+		$('#id').val(server['id'])
+		$('#hostname').val(server['hostname'])
+		$('#lan_ip').val(server['lan_ip'])
+		$('#wan_ip').val(server['wan_ip'])
+//		$("#cabinet_id").val(server['cabinet_id'])
+		$("#cabinet_id option[value='"+server['cabinet_id']+"']").attr('selected',true)
+		$('#op').val(server['op'])
+		$('#phone').val(server['phone'])
+		$('#cabinet_id').multiselect({
+			    placeholder: "请选择",
+			    enableCaseInsensitiveFiltering: true
+			    })
+		$('#cabinet_id').multiselect('refresh')
+	    }else{
+		$('#errmsg').html('fail')
+	    }
+	})
+//	$('#cabinet_id').multiselect({
+//		    placeholder: "请选择",
+//		    enableCaseInsensitiveFiltering: true
+//		    })
+//	$('#cabinet_id').multiselect('refresh')
+    })
+    $('#updateModel').modal('show')
+})
+
+
+$('.update-sure').click(function(){
+    var str=$('#updateForm').serialize()
+    var str1='&cabinet_id='+$('#cabinet_id').val()
+    $.post('/server_update/',str+str1,function(data){
+	data=JSON.parse(data)
+	if (data['code'] == 0){
+	    swal({
+		title:'Congratulation',
+		text:data['result'],
+		type:'success',
+		confirmButtonText:'确定'
+		},function(){
+		    location.href='/server/'
+		})
+	}else{
+	    swal('Error',data['errmsg'],'error')
+	}
+    })
+    return false
+})
+
+$('.del').click(function(){
+    var id=$(this).attr('data-id')
+    $('.del-sure').attr('data-id',id)
+    $('#deleteModel').modal('show')
+    
+})
+
+$('.del-sure').click(function(){
+    var id=$(this).attr('data-id')
+    var str="id="+id
+    $.post('/server_delete/',str,function(data){
+	swal({
+	    title:'Congratulation',
+	    text:'delete success!',
+	    type:'success',
+	    confirmButtonText:'确定'
+	    },function(){
+		location.href='/server/'
+	    })
+    })
+})
+
+$('#editable').DataTable({
+    "bDestroy": true, 
+    "language": {
+        "lengthMenu": "每页 _MENU_ 条记录",
+        "zeroRecords": "没有找到记录",
+        "sInfo": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 ),显示第 _START_ 至 _END_ 项(总共 _TOTAL_ 项)",
+        "infoEmpty": "无记录",
+        "infoFiltered": "(从 _MAX_ 条记录过滤)",
+        "sSearch": "搜索:",
+        "oPaginate": {
+        "sFirst": "首页",
+        "sPrevious": "上一页",
+        "sNext": "下一页",
+        "sLast": "末页"
+        }
+    },
+    "order": [[ 0,"asc" ]]
+})
+</script>
+{% endblock %}

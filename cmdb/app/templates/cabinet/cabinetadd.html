@@ -1,0 +1,120 @@
+{% extends "/base/base.html" %}
+
+{% block breadcrumb %} 
+添加机柜
+{% endblock %}
+{% block main %}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+	<div class="col-sm-10">
+	     <div class="ibox float-e-margins">
+		<div class="ibox-title">
+		    <h5>填写基本信息</h5>
+		    <div class="ibox-tools">
+			<a class="collapse-link">
+			    <i class="fa fa-chevron-up"></i>
+			</a>
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+			    <i class="fa fa-wrench"></i>
+			</a>
+			<a class="close-link">
+			    <i class="fa fa-times"></i>
+			</a>
+		    </div>
+		</div>
+		<div class="ibox-content">
+		    <form id="cabinetForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+			<div class="form-group">
+			    <label for="name" class="col-sm-3 control-label  ">机柜名</label>
+			    <div class="col-sm-8">
+				<input id="name" name="name" placeholder="Name" type="text" class="form-control" aria-required="true">
+			     </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="idc_id" class="col-sm-3 control-label">所在机房ID</label>
+			    <div class="col-sm-8">
+			        <select id='idc_id' class='multiselect dropdown-toggle btn btn-default'>
+				</select>
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="u_num" class="col-sm-3 control-label">U位</label>
+			    <div class="col-sm-8">
+				<input id="u_num" name="u_num" placeholder="U number" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="power" class="col-sm-3 control-label">电量</label>
+			    <div class="col-sm-8">
+				<input id="power" name="power" placeholder="Power" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <div class="col-sm-6 col-sm-offset-2">
+				<button id="submit_button" class="btn btn-primary">确认保存</button>
+				<button id='cancel_button' class="btn btn-white" type="reset">取消</button>
+				<button class="btn btn-white" type="reset">重置</button>
+			    </div>
+			</div>
+			<div style="color:red" class="text-center" id="errmsg"></div>
+		    </form>
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+<script>
+$('#cabinetForm').Validform({tiptype:3})
+
+$("#submit_button").click(function(){
+    var msg=$('.Validform_wrong').text()
+    var str=$("#cabinetForm").serialize()
+    var str1='&idc_id='+$('#idc_id').val()
+    if (!msg){
+	$.post("/cabinetadd/",str+str1,function(data){
+	    data=JSON.parse(data);
+	    if(data["code"] == 0){
+		swal({
+		    title:'Congratulation',
+		    text:data['result'],
+		    type:'success',
+		    confirmButtonText:'确定'
+		    },function(){
+			location.href='/cabinet/'
+		    })
+	    }else{
+		swal('Error',data['errmsg'],'error')
+	    }
+	})
+	return false
+    }
+})
+
+$('#cancel_button').click(function(){
+    location.href='/cabinet/'
+})
+
+var str = ''
+$.getJSON('/idc_msg',function(data){
+    idcs = data['result']
+    for(var i=0;i<idcs.length;i++){
+	str += '<option value="'+idcs[i]['id']+'">'+idcs[i]['name']+'</option>'
+	$('#idc_id').html(str)
+    }
+$('#idc_id').multiselect({
+            placeholder: "请选择",
+            enableCaseInsensitiveFiltering: true
+            })
+$('#idc_id').multiselect('refresh')
+
+})
+
+</script>
+{% endblock %}
+

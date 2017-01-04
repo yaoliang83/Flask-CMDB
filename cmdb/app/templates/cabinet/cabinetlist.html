@@ -1,0 +1,219 @@
+{% extends "/base/base.html" %}
+{% block breadcrumb %} 
+机柜管理
+{% endblock %}
+
+{% block main %} 
+<div class="col-sm-12">
+{% if role == "admin" %}
+<a href="/cabinetadd" class='btn btn-sm btn-primary'>添加机柜</a>
+{% endif %}
+<table class="table table-striped table-bordered table-hover " id="editable">
+<thead>
+    <tr>
+        <th class="text-center">编号</th>
+        <th class="text-center">机柜名</th>
+        <th class="text-center">所在机房ID</th>
+        <th class="text-center">U位</th>
+        <th class="text-center">电量</th>
+        <th class="text-center">操作</th>
+    </tr>
+</thead>
+<tbody>
+   {% if cabinets %}
+   {% for cabinet in cabinets %}
+        <tr class="gradeX">
+                <td class="text-center">{{cabinet.id}}</td>
+                <td class="text-center">{{cabinet.name}}</td>
+                <td class="text-center">{{cabinet.idc_id}}</td>
+                <td class="text-center">{{cabinet.u_num}}</td>
+                <td class="text-center">{{cabinet.power}}</td>
+                <td class="text-center">
+                    <button data-id="{{cabinet.id}}" class="btn btn-xs btn-info update">编辑</button>
+                    <button data-id="{{cabinet.id}}" class="btn btn-xs btn-danger del ">删除</button>
+                </td>
+            </td>
+         </tr>
+    {% endfor %}
+    {% endif %}
+</tbody>
+</table>
+
+</div> <!--col-sm-12-->
+<div class="modal fade" id='updateModel'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">更新</h4>
+      </div>
+      <div class="modal-body">
+	<form method="post" id="updateForm" class="form-horizontal">
+	    <div>
+		<input id='id' type='hidden' name='id' readonly='true' >
+	    </div><!-- id -->
+
+	    <div class='form-group'>
+		<label for="name" class="col-sm-3 control-label">机柜名<span class="red-fonts">*</span></label>
+		<div class="col-sm-7">
+		    <input id="name" name="name" placeholder="name" type="text" class="form-control" readonly>
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="idc_id" class="col-sm-3 control-label">所在机房ID</label>
+		<div class="col-sm-7">
+		    <select id='idc_id' class='multiselect dropdown-toggle btn btn-default'>
+		    </select>
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="u_num" class="col-sm-3 control-label">U位</label>
+		<div class="col-sm-7">
+		    <input id="u_num" name="u_num" placeholder="U number" type="text" class="form-control">
+		</div>
+	    </div>
+	    <div class="hr-line-dashed"></div>
+	    <div class='form-group'>
+		<label for="power" class="col-sm-3 control-label">电量</label>
+		<div class="col-sm-7">
+		    <input id="power" name="power" placeholder="Power" type="text" class="form-control">
+		</div>
+	    </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-default update-cancel" data-dismiss="modal">取消</button>
+	<button type="button" class="btn btn-primary update-sure" data-name=''>确认</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+</div> <!--col-sm-12-->
+<div class="modal fade" id='deleteModel'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">删除</h4>
+      </div>
+      <div class="modal-body">
+	<p>确认删除?</p>
+      </div>
+      <div class="modal-footer">
+	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>                                                                         
+	<button type="button" class="btn btn-primary del-sure" data-id=''>确认</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+$('#updateForm').Validform({tiptype:3})
+
+$('.update').click(function(){
+    var id=$(this).attr('data-id')
+    var url = "/cabinet_update_msg?id="+id
+
+    var str = ''
+    $.getJSON('/idc_msg',function(data){
+	idcs = data['result']
+	for(var i=0;i<idcs.length;i++){
+	    str += '<option value="'+idcs[i]['id']+'">'+idcs[i]['name']+'</option>'
+	    }
+	$('#idc_id').html(str)
+
+	$.getJSON(url,function(data){
+	    if (data['code'] == 0){
+		cabinet = data['result']
+		$('#id').val(cabinet['id'])
+		$('#name').val(cabinet['name'])
+//		$('#idc_id').val(cabinet['idc_id'])
+		$("#idc_id option[value='"+cabinet['idc_id']+"']").attr('selected',true)
+		$('#u_num').val(cabinet['u_num'])
+		$('#power').val(cabinet['power'])
+		$('#idc_id').multiselect({
+			    placeholder: "请选择",
+			    enableCaseInsensitiveFiltering: true
+			    })
+		$('#idc_id').multiselect('refresh')
+	    }else{
+		$('#errmsg').html('fail')
+	    }
+	})
+
+//    $('#idc_id').multiselect({
+//		placeholder: "请选择",
+//		enableCaseInsensitiveFiltering: true
+//		})
+//    $('#idc_id').multiselect('refresh')
+    })
+
+    $('#updateModel').modal('show')
+})
+
+$('.update-sure').click(function(){
+    var str=$('#updateForm').serialize()
+    var str1='&idc_id='+$('#idc_id').val()
+    $.post('/cabinet_update/',str+str1,function(data){
+	data=JSON.parse(data)
+	if (data['code'] == 0){
+	    swal({
+		title:'Congratulation',
+		text:data['result'],
+		type:'success',
+		confirmButtonText:'确定'
+		},function(){
+		    location.href='/cabinet/'
+		})
+	}else{
+	    swal('Error',data['errmsg'],'error')
+	}
+    })
+    return false
+})
+
+$('.del').click(function(){
+    var id=$(this).attr('data-id')
+    $('.del-sure').attr('data-id',id)
+    $('#deleteModel').modal('show')
+    
+})
+
+$('.del-sure').click(function(){
+    var id=$(this).attr('data-id')
+    var str="id="+id
+    $.post('/cabinet_delete/',str,function(data){
+	swal({
+	    title:'Congratulation',
+	    text:'delete success!',
+	    type:'success',
+	    confirmButtonText:'确定'
+	    },function(){
+		location.href='/cabinet/'
+	    })
+    })
+})
+
+$('#editable').DataTable({
+    "bDestroy": true, 
+    "language": {
+        "lengthMenu": "每页 _MENU_ 条记录",
+        "zeroRecords": "没有找到记录",
+        "sInfo": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 ),显示第 _START_ 至 _END_ 项(总共 _TOTAL_ 项)",
+        "infoEmpty": "无记录",
+        "infoFiltered": "(从 _MAX_ 条记录过滤)",
+        "sSearch": "搜索:",
+        "oPaginate": {
+        "sFirst": "首页",
+        "sPrevious": "上一页",
+        "sNext": "下一页",
+        "sLast": "末页"
+        }
+    },
+    "order": [[ 0,"asc" ]]
+})
+</script>
+{% endblock %}

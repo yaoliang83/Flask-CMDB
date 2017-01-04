@@ -1,0 +1,252 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>Reboot | Devops自动化运维平台</title>
+
+<link rel="stylesheet" type="text/css" href="/static/css/sweetalert.css">
+<script src="/static/js/sweetalert.min.js"></script>
+
+<link rel="shortcut icon" href="/static/img/facio.ico" type="image/x-icon">
+<link href="http://davidstutz.github.io/bootstrap-multiselect/docs/css/bootstrap-3.3.2.min.css" rel="stylesheet">
+<!--<link href="/static/css/bootstrap-3.3.2.min.css" rel="stylesheet">-->
+<link href="/static/css/style.css" rel="stylesheet">
+
+<!--plugins-->
+<link href="/static/pulgin/Font-Awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet">
+<link href="/static/pulgin/layer-v2.4/layer/skin/layer.css" rel="stylesheet">
+
+
+<script src="/static/js/jquery-2.1.1.js"></script>
+
+<!--plugins-->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/pulgin/layer-v2.4/layer/layer.js"></script>
+
+<!--datatables plugins-->
+<script type="text/javascript" src="/static/pulgin/datatables/dataTables.min.js"></script>
+<link rel="stylesheet" href="/static/pulgin/datatables/dataTables.min.css" type="text/css"/>
+
+<!--multiselect plugins-->
+<script type="text/javascript" src="/static/pulgin/multiselect/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="/static/pulgin/multiselect/bootstrap-multiselect.css" type="text/css"/>
+
+<!--validform plugins 表单验证插件-->
+<script async src="/static/js/analytics.js"></script>
+<script type="text/javascript" src="/static/js/Validform_v5.3.2_min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/static/js/highcharts.js"></script>
+<script type="text/javascript" src="/static/js/passwordStrength-min.js"></script>
+<link rel="stylesheet" href="/static/css/jquery-ui.css" type="text/css"/>
+<link rel="stylesheet" href="/static/css/passwordStrength.css" type="text/css"/>
+
+</head>
+<!--整个页面的框架-->
+<div id="wrapper">
+        
+<!--左边导航-->
+<nav class="navbar-default navbar-static-side" role="navigation">
+<div class="sidebar-collapse">
+
+<ul class="nav" id="side-menu">            
+<!--左边栏头像部分-->
+<li class="nav-header">
+    <div class="dropdown profile-element">
+        <span>
+            <img alt="image" class="img-circle" width="48" height="48" src="/static/img/root.png">
+        </span>
+        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+            <span class="clear">
+                <span class="block m-t-xs">
+                    <strong class="font-bold"><span style="color: #8095a8"></span></strong>
+                </span>
+                <span class="text-muted text-xs block">
+                    {% if role=='admin' %}管理员{% else %}普通用户{% endif %}
+                 </span>
+            </span>
+        </a>
+    </div>
+</li>
+<script>
+    $(".iframe_user").on('click', function(){
+        var url= $(this).attr("value");
+        layer.open({
+            type: 2,
+            title: '个人信息',
+            maxmin: true,
+            shift: 'top',
+            border: [2, 0.3, '#1AB394'],
+            shade: [0.5, '#000000'],
+            shadeClose: true,
+            area : ['800px', '600px'],
+            content: '\<\div style="padding:20px;">自定义内容\<\/div>'
+        });
+    });
+</script>
+<!--左边栏头像部分结束-->
+
+<!--左边菜单栏开始-->
+
+<li id="index" class="active">
+<a href="/"><i class="fa fa-dashboard"></i> <span class="nav-label">仪表盘</span><span class="label label-info pull-right"></span></a>
+</li>   <!--仪表盘-->
+           
+<li id="juser">
+<a href="#"><i class="fa fa-group"></i> <span class="nav-label">用户管理</span><span class="fa arrow"></span></a>
+   <ul class="nav nav-second-level collapse">
+      <!--  <li class="group"><a href="#">查看用户组</a></li>-->
+        <li class="self"><a href="/userself">个人用户信息</a></li>
+	{% if role=='admin' %}
+        <li class="user"><a href="/userlist">所有用户信息</a></li>
+	{% endif %}
+   </ul>
+</li>   <!-- 用户管理 -->     
+     
+<li id="jasset">
+<a><i class="fa fa-inbox"></i> <span class="nav-label">资产管理</span><span class="fa arrow"></span></a>
+  {% if role=='admin' %}
+  <ul class="nav nav-second-level collapse">
+    <li class="server"><a href="/server">服务器管理</a></li>
+    <li class="cabinet"> <a href="/cabinet">机柜管理</a></li>
+    <li class="idc"> <a href="/idc">机房管理</a></li>
+  </ul> 
+  {% endif %}
+</li> <!-- 资产管理 -->     
+            
+<li id="jduty">
+<a href="#"><i class="fa fa-bell"></i> <span class="nav-label">值班系统</span><span class="fa arrow"></span></a>
+  <ul class="nav nav-second-level collapse">
+    <li class="dutyself"><a href="/dutyself">当前值班人</a></li>
+    <li class="dutylist"><a href="/dutylist">值班列表</a></li>
+  </ul> 
+</li> <!-- 值班系统 --> 
+
+<li id="jjob">
+<a href="#"><i class="fa fa-edit"></i> <span class="nav-label">工单管理</span><span class="fa arrow"></span></a>
+  <ul class="nav nav-second-level collapse">
+    <li class="jobadd"><a href="/jobadd/">工单申请</a></li>
+    <li class="joblist"> <a href="/joblist/">工单申请列表</a></li>
+    <li class="jobhistory"> <a href="/jobhistory/">历史工单列表</a></li>
+  </ul> 
+</li> <!-- 工单管理 --> 
+
+<li id="jcode">
+<a href="#"><i class="fa fa-download"></i> <span class="nav-label">代码更新</span><span class="fa arrow"></span></a>
+  <ul class="nav nav-second-level collapse">
+    {% if role=='admin' %}
+    <li class="code"><a href="/code/">更新信息</a></li>
+    {% endif %}
+    <li class="codelist"> <a href="/codelist/">更新历史</a></li>
+  </ul> 
+</li> <!-- 代码更新 --> 
+         
+<li id="setting">
+<a href="#"><i class="fa fa-gears"></i> <span class="nav-label">设置</span><span class="label label-info pull-right"></span></a>
+</li>    <!--设置-->
+
+<li class="special_link">
+<a href="http://www.51reboot.com" target="_blank"><i class="fa fa-database"></i> <span class="nav-label">访问官网</span></a>
+</li>  <!--link-->
+ 
+</ul> 
+</div>
+</nav>  <!--左边导航结束-->
+<!--左边导航点击自动弹出下拉菜单-->
+<script>
+$('li').click(function(){
+    $('li').removeClass("active");   
+    $(this).addClass("active");   
+})
+$('#jasset').click(function(){
+    $("#jasset").children("ul").toggleClass("collapse");   
+})
+$('#juser').click(function(){
+    $("#juser").children("ul").toggleClass("collapse");   
+})
+$('#jduty').click(function(){
+    $("#jduty").children("ul").toggleClass("collapse");   
+})
+$('#jjob').click(function(){
+    $("#jjob").children("ul").toggleClass("collapse");   
+})
+$('#jcode').click(function(){
+    $("#jcode").children("ul").toggleClass("collapse");   
+})
+</script>
+
+<!--右边的整体-->
+<div id="page-wrapper" class="gray-bg">
+
+<!--右边导航第一层-->
+<div class="row border-botto">
+   <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+   <div class="navbar-header">
+       <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"> <i class="fa fa-bars"></i></a>
+    <form role="search" class="navbar-form-custom" method="get" action="">
+            <div class="form-group">
+                <input type="text" placeholder="输入搜索..." class="form-control" name="search" id="top-search">
+            </div>
+        </form> 
+    </div>
+    <ul class="nav navbar-top-links navbar-right">
+        <li>
+            <span class="m-r-sm text-muted welcome-message">Reboot自动化运维平台</span>
+        </li>
+        <li>
+            <a href="/logout/">
+                <i class="fa fa-sign-out"></i> Log out
+            </a>
+        </li> 
+    </ul>
+   </nav>
+</div>
+
+
+<!--右边第二层面包导航-->
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-12">
+        <ol class="breadcrumb">
+            <li>
+                <a href="/">仪表盘</a>
+            </li>
+            <li>
+                <a href="/">
+                {% block breadcrumb %}
+                {% endblock %}
+          
+                </a>
+            </li>
+        </ol>
+    </div>
+</div> <!--右边导航结束-->
+
+<!--正文部分分了三层-->
+<div class="wrapper wrapper-content">
+
+    <div class="row">
+        <div class="col-sm-12 border-bottom white-bg dashboard-header" style="margin-left:15px;height: 800px">
+                {% block main %}
+                {% endblock %}
+
+         </div>
+    </div>
+</div> <!--wrapper-content-->
+
+
+
+<!--页面尾部-->
+<div class="footer fixed">
+    <div class="pull-right">
+        Version <strong>0.3.1</strong> GPL.
+    </div>
+    <div>
+        <strong>Copyright</strong>Reboot.com  Team © 2014-2015
+    </div>
+</div>
+
+</div>  <!--page-wrapper-->
+</div>   <!--wrapper-->
+
+</body></html>

@@ -1,0 +1,133 @@
+{% extends "/base/base.html" %}
+
+{% block breadcrumb %} 
+添加服务器
+{% endblock %}
+{% block main %}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+	<div class="col-sm-10">
+	     <div class="ibox float-e-margins">
+		<div class="ibox-title">
+		    <h5>填写基本信息</h5>
+		    <div class="ibox-tools">
+			<a class="collapse-link">
+			    <i class="fa fa-chevron-up"></i>
+			</a>
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+			    <i class="fa fa-wrench"></i>
+			</a>
+			<a class="close-link">
+			    <i class="fa fa-times"></i>
+			</a>
+		    </div>
+		</div>
+		<div class="ibox-content">
+		    <form id="serverForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+			<div class="form-group">
+			    <label for="hostname" class="col-sm-3 control-label">主机名</label>
+			    <div class="col-sm-8">
+				<input id="hostname" name="hostname" placeholder="Name" type="text" class="form-control" aria-required="true">
+			     </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="cabinet_id" class="col-sm-3 control-label">机柜ID</label>
+			    <div class="col-sm-8">
+			        <select id='cabinet_id' >
+					</select>
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="lan_ip" class="col-sm-3 control-label">内网IP</label>
+			    <div class="col-sm-8">
+				<input id="lan_ip" name="lan_ip" placeholder="Lan ip" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="wan_ip" class="col-sm-3 control-label">外网IP</label>
+			    <div class="col-sm-8">
+				<input id="wan_ip" name="wan_ip" placeholder="Wan ip" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="op" class="col-sm-3 control-label">运维负责人</label>
+			    <div class="col-sm-8">
+				<input id="op" name="op" placeholder="Operator" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="phone" class="col-sm-3 control-label">联系电话</label>
+			    <div class="col-sm-8">
+				<input id="phone" name="phone" placeholder="Phone" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div>
+
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <div class="col-sm-6 col-sm-offset-2">
+				<button id="submit_button" class="btn btn-primary">确认保存</button>
+				<button id='cancel_button' class="btn btn-white" type="reset">取消</button>
+				<button class="btn btn-white" type="reset">重置</button>
+			    </div>
+			</div>
+			<div style="color:red" class="text-center" id="errmsg"></div>
+		    </form>
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+<script>
+$('#serverForm').Validform({tiptype:3})
+
+$("#submit_button").click(function(){
+    var msg=$('.Validform_wrong').text()
+    var str=$("#serverForm").serialize()
+    var str1='&cabinet_id='+$('#cabinet_id').val()
+    if (!msg){
+	$.post("/serveradd/",str+str1,function(data){
+	    data=JSON.parse(data);
+	    if(data["code"] == 0){
+		swal({
+		    title:'Congratulation',
+		    text:data['result'],
+		    type:'success',
+		    confirmButtonText:'确定'
+		    },function(){
+			location.href='/server/'
+		    })
+	    }else{
+		swal('Error',data['errmsg'],'error')
+	    }
+	})
+	return false
+    }
+})
+
+$('#cancel_button').click(function(){
+    location.href='/server/'
+})
+
+var str = ''
+$.getJSON('/cabinet_msg/',function(data){
+    cabinets = data['result']
+    for(var i=0;i<cabinets.length;i++){
+	str += '<option value="'+cabinets[i]['id']+'">'+cabinets[i]['name']+'</option>'
+	$('#cabinet_id').html(str)
+    }
+$('#cabinet_id').multiselect({
+            placeholder: "请选择",
+            enableCaseInsensitiveFiltering: true
+            })
+$('#cabinet_id').multiselect('refresh')
+})
+
+</script>
+{% endblock %}
+

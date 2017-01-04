@@ -1,0 +1,177 @@
+{% extends "/base/base.html" %}
+
+{% block breadcrumb %} 
+添加用户
+{% endblock %}
+{% block main %}
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+	<div class="col-sm-10">
+	     <div class="ibox float-e-margins">
+		<div class="ibox-title">
+		    <h5>填写基本信息</h5>
+		    <div class="ibox-tools">
+			<a class="collapse-link">
+			    <i class="fa fa-chevron-up"></i>
+			</a>
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+			    <i class="fa fa-wrench"></i>
+			</a>
+			<a class="close-link">
+			    <i class="fa fa-times"></i>
+			</a>
+		    </div>
+		</div>
+		<div class="ibox-content">
+		    <form id="userForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+			<div class="form-group">
+			    <label for="username" class="col-sm-2 control-label  ">用户名<span class="red-fonts ">*</span></label>
+			    <div class="col-sm-8">
+				<input id="username" name="name" placeholder="Username" type="text" class="form-control" aria-required="true" data-tip="输入用户名" class='inputxt' datatype='s4-16' errormsg='用户名最少4个字符，最多16个字符'/>
+			     </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="name" class="col-sm-2 control-label">姓名<span class="red-fonts">*</span></label>
+			    <div class="col-sm-8">
+				<input id="name" name="name_cn" placeholder="Name" type="text" class="form-control" aria-required="true" data-tip="姓名" class='inputxt' datatype='s2-6' errormsg='姓名最少2个字符，最多6个字符'/>
+			     </div>
+			</div>
+
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="name" class="col-sm-2 control-label">密码<span class="red-fonts">*</span></label>
+			    <div class="col-sm-8">
+				<input id="name" name="password" placeholder="Password" type="password" class="form-control" aria-required="true" data-tip="密码" class='inputxt' plugin='passwordStrength' datatype='*6-18' nullmsg='请设置密码' errormsg='密码最少6位，最多18位'/>
+				<td>
+				    <div class="passwordStrength">
+					密码强度： 
+					<span>弱</span>
+					<span>中</span>
+					<span class="last">强</span>
+				    </div>
+				</td>
+				<td>
+				    <div class="Validform_checktip"></div>
+				</td>
+			    </div>
+			</div>
+
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="mobile" class="col-sm-2 control-label">手机号</label>
+			    <div class="col-sm-8">
+				<input id="mobile" name="mobile" placeholder="Mobile" type="text" class="form-control" aria-required="true" data-tip="手机号" class='inputxt' ignore='ignore' datatype='m' errormsg='手机号必须11位数字'/>
+			     </div>
+			</div>
+			
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="email" class="col-sm-2 control-label">邮箱号</label>
+			    <div class="col-sm-8">
+				<input id="email" name="email" type="email" placeholder="username@reboot.com" class="form-control" aria-required="true" data-tip="Email" class='inputxt' ignore='ignore' datatype='e' errormsg='必须是电子邮件格式'/>
+			    </div>
+			</div>
+
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="name" class="col-sm-2 control-label">邮箱密码<span class="red-fonts">*</span></label>
+			    <div class="col-sm-8">
+				<input id="email_password" name="email_password" placeholder="Email password" type="password" class="form-control" aria-required="true" data-tip="密码" class='inputxt'  nullmsg='请输入邮箱密码' />
+			    </div>
+			</div>
+			
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label for="role" class="col-sm-2 control-label">权限</label>
+			    <div class="col-sm-8">
+				
+				<div class="col-sm-3">
+				    <div class="radio i-checks">
+					<label><input type="radio" value="user" class="role" name="role" checked="">普通用户</label>
+				    </div>
+				</div>
+				
+				<div class="col-sm-3">
+				    <div class="radio i-checks">
+					<label><input type="radio" value="admin" class="role" name="role">管理员</label>
+				    </div>
+				</div>
+				
+			     </div>
+			</div>
+			
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <label class="col-sm-2 control-label">状态</label>
+			    <div class="col-sm-8">
+				<div class="col-sm-3">
+				    <div class="radio i-checks">
+					<label><input type="radio" value="0" name="status" checked="">启用</label>
+				    </div>
+				</div>
+				
+				<div class="col-sm-3">
+				    <div class="radio i-checks">
+					<label><input type="radio" value="1" name="status">禁用</label>
+				    </div>
+				</div>
+
+			    </div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="form-group">
+			    <div class="col-sm-8 col-sm-offset-2">
+				<button id="submit_button" class="btn btn-primary">确认保存</button>
+				<button id='cancel_button' class="btn btn-white" type="reset">取消</button>
+				<button class="btn btn-white" type="reset">重置</button>
+			    </div>
+			</div>
+			<div style="color:red" class="text-center" id="errmsg"></div>
+		    </form>
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+<script>
+
+$('#userForm').Validform({
+    tiptype:3,
+    usePlugin:{
+	passwordstrength:{
+	    minLen:6,
+	    maxLen:18
+	}
+    }
+})
+
+
+$("#submit_button").click(function(){
+    var str=$('.Validform_wrong').text()
+    if(!str){
+	$.post("/useradd/",$("#userForm").serialize(),function(data){
+	    data=JSON.parse(data);
+	    if(data["code"] == 0){
+		swal('Congratulation',data['result'],'success')
+		//location.href='/userlist'
+		$('.confirm').click(function(){
+		    location.href='/userlist/'
+		})
+	    }else{
+		swal('Error',data['errmsg'],'error')
+	    }
+	})
+	return false
+    }
+})
+
+$('#cancel_button').click(function(){
+    location.href='/userlist/'
+})
+
+
+</script>
+{% endblock %}
+
